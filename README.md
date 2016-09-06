@@ -43,6 +43,18 @@ On NuGet as pre-release:
 * [CoresightAutomation.PIWebAPI](https://www.nuget.org/packages/CoresightAutomation.PIWebAPI)
 * [CoresightAutomation.AFSDK](https://www.nuget.org/packages/CoresightAutomation.AFSDK)
 
+## Creating a default display
+
+An example AF Element from everyone's favorite example database:
+
+   ![Target AF Element](https://github.com/jamesbperry/PI-Coresight-Automation/raw/master/docs/demo/compressor-element.jpg)
+
+New Compressor Template display created by one of the `.Demo.` apps:
+
+   ![Coresight Displays](https://github.com/jamesbperry/PI-Coresight-Automation/raw/master/docs/demo/coresight-display-list.jpg)
+
+   ![Coresight Display](https://github.com/jamesbperry/PI-Coresight-Automation/raw/master/docs/demo/compressor-default-display.jpg)
+
 ## Known issues
 * Display naming collisions are not validated
 * Authentication/authorization issues are not handled gracefully
