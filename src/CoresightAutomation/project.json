@@ -1,0 +1,32 @@
+﻿{
+  "version": "1.0.2-*",
+  "title": "CoresightAutomation",
+  "description": "CoresightAutomation",
+  "authors": ["osisoft"],
+  "dependencies": {
+    "Newtonsoft.Json": "[8.0.1,)"
+  },
+  "frameworks": {
+    "netstandard1.6": {
+      "imports": "dnxcore50",
+      "dependencies": {
+        "NETStandard.Library": "1.6.0"
+      }
+    },
+    "net45": {
+      "dependencies": {
+        "Microsoft.Net.Http": "2.2.29"
+      }
+    }
+  },
+  "buildOptions": {
+    "xmlDoc": true
+  },
+  "packOptions": {
+    "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+    "owners": [ "osisoft" ],
+    "repository": { "url": "https://github.com/jamesbperry/PI-Coresight-Automation" },
+    "summary": "Community-maintained library for creating default Coresight displays",
+    "tags": [ "OSIsoftCommunity", "CoresightAutomation", "PI" ]
+  }
+}

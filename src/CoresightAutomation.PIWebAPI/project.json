@@ -1,0 +1,34 @@
+﻿{
+  "version": "1.0.2-*",
+  "title": "CoresightAutomation.PIWebAPI",
+  "description": "CoresightAutomation.PIWebAPI",
+  "dependencies": {
+    "CoresightAutomation": "1.0.2-*",
+    "Newtonsoft.Json": "[8.0.1,)",
+    "Microsoft.Framework.WebEncoders.Core": "1.0.0-*"
+  },
+  "frameworks": {
+    "netstandard1.6": {
+      "imports": "dnxcore50",
+      "dependencies": {
+        "NETStandard.Library": "1.6.0",
+        "System.Threading.Tasks.Parallel": "4.0.1"
+      }
+    },
+    "net45": {
+      "dependencies": {
+        "Microsoft.Net.Http": "2.2.29"
+      }
+    }
+  },
+  "buildOptions": {
+    "xmlDoc": true
+  },
+  "packOptions": {
+    "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+    "owners": [ "osisoft" ],
+    "repository": { "url": "https://github.com/jamesbperry/PI-Coresight-Automation" },
+    "summary": "Community-maintained library for using the PI Web API when creating default Coresight displays",
+    "tags": [ "OSIsoftCommunity", "CoresightAutomation", "PI" ]
+  }
+}

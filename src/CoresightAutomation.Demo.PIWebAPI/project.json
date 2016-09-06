@@ -1,0 +1,24 @@
+{
+  "version": "1.0.0-*",
+  "buildOptions": {
+    "emitEntryPoint": true
+  },
+  "dependencies": {
+    "CoresightAutomation": "[1.0.1-*,)",
+    "CoresightAutomation.PIWebAPI": "[1.0.1-*,)",
+    "Newtonsoft.Json": "8.0.3"
+  },
+  "frameworks": {
+    "netstandard1.6": {
+      "imports": "dnxcore50",
+      "dependencies": {
+        "NETStandard.Library": { "type": "platform", "version": "1.6.0"}
+      }
+    },
+    "net45": {
+      "dependencies": {
+        "Microsoft.Net.Http": "2.2.29"
+      }
+    }
+  }
+}

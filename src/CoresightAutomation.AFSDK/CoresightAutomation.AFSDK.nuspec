@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>CoresightAutomation.AFSDK</id>
+    <version>$version$</version>
+    <title>CoresightAutomation.AFSDK</title>
+    <authors>osisoft</authors>
+    <owners>osisoft</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+    <projectUrl>https://github.com/jamesbperry/PI-Coresight-Automation</projectUrl>
+    <description>Community-maintained library for using the PI AF SDK when creating default Coresight displays</description>
+    <copyright>Copyright 2016</copyright>
+    <tags>OSIsoftCommunity CoresightAutomation PI</tags>
+    <dependencies>
+      <group>
+        <dependency id="Newtonsoft.Json" version="[8.0.1,)" />
+        <dependency id="CoresightAutomation" version="$version$" />
+        <dependency id="Microsoft.Net.Http" version="2.2.29" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\Debug\CoresightAutomation.AFSDK.dll" target="lib\net45" />
+  </files>
+</package>
