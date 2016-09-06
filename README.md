@@ -2,11 +2,22 @@
 Libraries for programmatically creating PI Coresight displays.
 
 ## Overview
+
+The initial focus is on building "default" displays for a given PI AF Element and its Element Template. That is: an automatically-constructed display formed from a list of Attribute Templates and the categories into which they are grouped. 
+
+For each Attribute Category present within the target Element Template, 
+* Trendable Attributes get placed into Trend objects
+* Non-trendable Attributes go into Tables.
+ 
+[Demo images](#images) are below. This is intended to be an evolution of the built-in "Ad Hoc Display," which yields one large table with sparklines.
+
+The initial author's hope is that the Community finds the underlying tools useful for programmatically creating displays in a variety of settings. 
+
+## Layout
 * #### Core library
   * `CoresightAutomation`
   
     Core functionality for connecting to PI Coresight and creating displays.
-    Currently focused on building "default" displays for a given PI AF Element and its Element Template.
 
 * #### Data access libraries
   * `CoresightAutomation.PIWebAPI`
@@ -43,7 +54,7 @@ On NuGet as pre-release:
 * [CoresightAutomation.PIWebAPI](https://www.nuget.org/packages/CoresightAutomation.PIWebAPI)
 * [CoresightAutomation.AFSDK](https://www.nuget.org/packages/CoresightAutomation.AFSDK)
 
-## Creating a default display
+## <a name="images"></a>Creating a default display 
 
 An example AF Element from everyone's favorite example database:
 
