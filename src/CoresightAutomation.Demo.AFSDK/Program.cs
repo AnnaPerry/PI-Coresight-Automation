@@ -27,10 +27,14 @@ namespace CoresightAutomation.Demo.AFSDK
                 throw new InvalidOperationException("Element must be based on a template");
             }
 
-            AFElementTemplateSlim elementTemplateSlim = element.Template.ToSlim();
+            Console.WriteLine("Optionally, provide a semicolon-delimited list of attribute categories to be included. By default, all are included.");
+            string attributeCategoryList = Console.ReadLine();
+            List<string> includedCategories = attributeCategoryList.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            AFElementTemplateSlim elementTemplateSlim = element.Template.ToSlim(element);
 
             CoresightDefaultDisplayFactory displayFactory = new CoresightDefaultDisplayFactory(coresightUri);
-            DisplayRevision defaultDisplay = displayFactory.CreateDefaultDisplayAsync(elementTemplateSlim, elementPath).GetAwaiter().GetResult();
+            DisplayRevision defaultDisplay = displayFactory.CreateDefaultDisplayAsync(elementTemplateSlim, elementPath, includedCategories).GetAwaiter().GetResult();
 
             Uri displayUri = defaultDisplay.GetUri(displayFactory.CoresightBaseUri);
             Console.WriteLine("New display created at {0}", displayUri);

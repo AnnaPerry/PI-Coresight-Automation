@@ -72,23 +72,33 @@ namespace CoresightAutomation.Types
         /// <summary>
         /// Group a collection of attriute templates by the categories they are in.
         /// </summary>
-        /// <param name="attributes"></param>
-        /// <returns></returns>
-        public static Dictionary<string, IEnumerable<AFAttributeTemplateSlim>> GroupByCategory(IEnumerable<AFAttributeTemplateSlim> attributes)
+        /// <param name="attributes">Attributes to be grouped by category</param>
+        /// <param name="includedCategories">Optional list of categories to include. By default, all categories are included, as is the set of attributes not in a category. If specifying categories, the name @None will explicitly include uncategorized attributes.</param>
+        /// <returns>Dictionary of categories and the attributes they contain</returns>
+        public static Dictionary<string, IEnumerable<AFAttributeTemplateSlim>> GroupByCategory(IEnumerable<AFAttributeTemplateSlim> attributes, ICollection<string> includedCategories = null)
         {
             IEnumerable<AFAttributeTemplateSlim> topLevelAttributes = attributes.Where(a => a.IsTopLevel);
             List<string> topLevelCategories = topLevelAttributes.SelectMany(a => a.CategoryNames).Distinct().ToList();
 
+            //If filtered 
+            if (includedCategories != null && includedCategories.Count > 0)
+            {
+                topLevelCategories = topLevelCategories.Where(c => includedCategories.Contains(c, StringComparer.OrdinalIgnoreCase)).ToList();
+            }
+
             //Group the attributes by category
-            var attributesByCategory = topLevelCategories.ToDictionary(c => c, c => attributes.Where(a => a.CategoryNames.Contains(c)));
+            var attributesByCategory = topLevelCategories.ToDictionary(c => c, c => attributes.Where(a => a.CategoryNames.Contains(c)), StringComparer.OrdinalIgnoreCase);
 
             //Account for attributes which are uncategorized
-            attributesByCategory.Add(NullCategory, attributes.Where(a => !a.CategoryNames.Any()));
+            if ((includedCategories == null || includedCategories.Contains(NullCategory)) && attributes.Any(a => !a.CategoryNames.Any()))
+            {
+                attributesByCategory.Add(NullCategory, attributes.Where(a => !a.CategoryNames.Any()));
+            }
 
             return attributesByCategory;
         }
 
-        public static readonly string NullCategory = string.Empty;
+        public static readonly string NullCategory = "@None";
 
     }
 }

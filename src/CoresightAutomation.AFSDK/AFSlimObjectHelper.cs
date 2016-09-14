@@ -10,7 +10,13 @@ namespace CoresightAutomation.AFSDK
 {
     public static class AFSlimObjectHelper
     {
-        public static AFElementTemplateSlim ToSlim(this AFElementTemplate fat)
+        /// <summary>
+        /// Slims an AF SDK AFElementTemplate
+        /// </summary>
+        /// <param name="fat">The template to be slimmed</param>
+        /// <param name="instance">Optional element instance to provide data reference information if not set on the template</param>
+        /// <returns></returns>
+        public static AFElementTemplateSlim ToSlim(this AFElementTemplate fat, AFElement instance = null)
         {
             //Populate element template
             AFElementTemplateSlim slim = new AFElementTemplateSlim()
@@ -24,12 +30,18 @@ namespace CoresightAutomation.AFSDK
 
             //Populate attribute templates
             IEnumerable<AFAttributeTemplate> allAttributes = fat.GetAllAttributeTemplatesAndChildren();
-            slim.AllAttributes = allAttributes.Select(a => a.ToSlim()).ToList();
+            slim.AllAttributes = allAttributes.Select(a => a.ToSlim(instance?.Attributes[a.GetPath(a.ElementTemplate)])).ToList();
 
             return slim;
         }
 
-        public static AFAttributeTemplateSlim ToSlim(this AFAttributeTemplate fat)
+        /// <summary>
+        /// Slims an AF SDK AFAttributeTemplate
+        /// </summary>
+        /// <param name="fat">The template to be slimmed</param>
+        /// <param name="instance">Optional element instance to provide data reference information if not set on the template</param>
+        /// <returns></returns>
+        public static AFAttributeTemplateSlim ToSlim(this AFAttributeTemplate fat, AFAttribute instance = null)
         {
             AFAttributeTemplateSlim slim = new AFAttributeTemplateSlim()
             {
@@ -41,7 +53,7 @@ namespace CoresightAutomation.AFSDK
                 TypeName = fat.Type.Name,
                 TypeQualifier = fat.TypeQualifier is IAFNamedObject ? ((IAFNamedObject)fat.TypeQualifier).Name : null,
                 IsHidden = fat.IsHidden, //requires AF Client 2.7 or higher
-                IsStatic = fat.DataReferencePlugIn == null,
+                IsStatic = fat.DataReferencePlugIn == null && instance?.DataReferencePlugIn == null,
                 HasChildren = fat.AttributeTemplates != null && fat.AttributeTemplates.Count > 0,
                 CategoryNames = fat.Categories.Select(c => c.Name).ToList()
             };

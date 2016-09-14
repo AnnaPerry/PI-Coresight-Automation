@@ -40,7 +40,14 @@ namespace CoresightAutomation
 
         public Uri CoresightBaseUri { get; private set; }
 
-        public Task<DisplayRevision> CreateDefaultDisplayAsync(AFElementTemplateSlim elementTemplate, string initialContextElementPath)
+        /// <summary>
+        /// Creates a default display for a given Element Template and Element instance.
+        /// </summary>
+        /// <param name="elementTemplate">The element template on which the display will be based</param>
+        /// <param name="initialContextElementPath">The element which will be the display's initial context</param>
+        /// <param name="includedCategories">Optional list of categories to include. By default, all categories are included, as is the set of attributes not in a category. If specifying categories, the name @None will explicitly include uncategorized attributes.</param>
+        /// <returns>A reference to the created display</returns>
+        public Task<DisplayRevision> CreateDefaultDisplayAsync(AFElementTemplateSlim elementTemplate, string initialContextElementPath, ICollection<string> includedCategories = null)
         {
             //If the path is not escaped, do so here. TODO does this need to be URL encoded?
             if (!initialContextElementPath.Contains(@"\\\\"))
@@ -52,11 +59,19 @@ namespace CoresightAutomation
             CoresightDisplayBuilder displayBuilder = new CoresightDisplayBuilder(CoresightBaseUri, name);
 
             IEnumerable<AFAttributeTemplateSlim> includedAttributes = elementTemplate.AllAttributes.Where(a => !a.IsHidden && ValueTypeHelper.TypeIsSupported(a.TypeName));
-            Dictionary<string, IEnumerable<AFAttributeTemplateSlim>> attributesByCategory = AFAttributeTemplateSlim.GroupByCategory(includedAttributes);
+            Dictionary<string, IEnumerable<AFAttributeTemplateSlim>> attributesByCategory = AFAttributeTemplateSlim.GroupByCategory(includedAttributes, includedCategories);
 
-            foreach (var category in attributesByCategory)
+            //If an explicit collection of included categories is specified, preserve its order
+            bool explicitCategoriesSpecified = includedCategories != null && includedCategories.Count > 0;
+            var attributesByCategoryOrdered = !explicitCategoriesSpecified ? 
+                attributesByCategory.AsEnumerable() : 
+                includedCategories.Select(c => new KeyValuePair<string, IEnumerable<AFAttributeTemplateSlim>>(c, attributesByCategory[c])); 
+
+            foreach (var category in attributesByCategoryOrdered)
             {
-                string titleText = category.Key == AFAttributeTemplateSlim.NullCategory ? "Uncategorized" : category.Key;
+                string titleText = AFAttributeTemplateSlim.NullCategory.Equals(category.Key, StringComparison.OrdinalIgnoreCase) ? 
+                    "Uncategorized" : 
+                    category.Key;
                 titleText = attributesByCategory.Count < 2 ? null : titleText;
 
                 AddAttributeGroup(displayBuilder, category.Value, initialContextElementPath, titleText);

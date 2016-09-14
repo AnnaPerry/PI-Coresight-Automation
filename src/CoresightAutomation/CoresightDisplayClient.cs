@@ -37,6 +37,7 @@ namespace CoresightAutomation
                 Console.WriteLine("Getting Coresight verification tokens.");
                 HttpResponseMessage response = await client.HttpClient.GetAsync("");
                 Console.WriteLine("Response: {0} - {1}", response.StatusCode, response.ReasonPhrase);
+                response.EnsureSuccessStatusCode();
 
                 string content = await response.Content.ReadAsStringAsync();
 
@@ -56,7 +57,9 @@ namespace CoresightAutomation
         {
             using (var coresightClient = new CoresightHttpClient(_coresightBaseUri, _tokens, _credentials))
             {
-                string newDisplayJson = await coresightClient.HttpClient.GetStringAsync("Displays/NewDisplay");
+                HttpResponseMessage response = await coresightClient.HttpClient.GetAsync("Displays/NewDisplay");
+                response.EnsureSuccessStatusCode();
+                string newDisplayJson = await response.Content.ReadAsStringAsync();
                 DisplayInfo newDisplay = JsonConvert.DeserializeObject<DisplayInfo>(newDisplayJson);
                 return newDisplay.RequestId;
             }

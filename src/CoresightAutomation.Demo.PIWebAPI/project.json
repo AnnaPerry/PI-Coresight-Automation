@@ -1,11 +1,11 @@
 {
-  "version": "1.0.0-*",
+  "version": "1.0.3-*",
   "buildOptions": {
     "emitEntryPoint": true
   },
   "dependencies": {
-    "CoresightAutomation": "[1.0.1-*,)",
-    "CoresightAutomation.PIWebAPI": "[1.0.1-*,)",
+    "CoresightAutomation": "[1.0.3-*,)",
+    "CoresightAutomation.PIWebAPI": "[1.0.3-*,)",
     "Newtonsoft.Json": "8.0.3"
   },
   "frameworks": {

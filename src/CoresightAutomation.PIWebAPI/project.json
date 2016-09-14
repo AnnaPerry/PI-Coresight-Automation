@@ -1,9 +1,9 @@
 ﻿{
-  "version": "1.0.2-*",
+  "version": "1.0.3-*",
   "title": "CoresightAutomation.PIWebAPI",
   "description": "CoresightAutomation.PIWebAPI",
   "dependencies": {
-    "CoresightAutomation": "1.0.2-*",
+    "CoresightAutomation": "1.0.3-*",
     "Newtonsoft.Json": "[8.0.1,)",
     "Microsoft.Framework.WebEncoders.Core": "1.0.0-*"
   },

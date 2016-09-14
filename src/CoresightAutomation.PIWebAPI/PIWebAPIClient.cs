@@ -50,19 +50,20 @@ namespace CoresightAutomation.PIWebAPI
             string serverName = pathTokens[0];
             string databaseName = pathTokens[1];
             string templatePath = string.Format("\\\\{0}\\{1}\\ElementTemplates[{2}]", serverName, databaseName, templateName);
-            return GetElementTemplateSlimAsync(templatePath);
+            return GetElementTemplateSlimAsync(templatePath, forElement);
         }
 
-        public async Task<AFElementTemplateSlim> GetElementTemplateSlimAsync(AFElementTemplateDTO elementTemplateDTO)
+        public async Task<AFElementTemplateSlim> GetElementTemplateSlimAsync(AFElementTemplateDTO elementTemplateDTO, AFElementDTO elementDTO)
         {
             List<AFAttributeTemplateDTO> attributeTemplates = await GetAllAttributeTemplateDTOsAsync(elementTemplateDTO);
-            return elementTemplateDTO.ToSlim(attributeTemplates);
+            List<AFAttributeDTO> attributeInstances = await GetAllAttributeDTOsAsync(elementDTO);
+            return elementTemplateDTO.ToSlim(attributeTemplates, attributeInstances);
         }
 
-        public async Task<AFElementTemplateSlim> GetElementTemplateSlimAsync(string absolutePath)
+        public async Task<AFElementTemplateSlim> GetElementTemplateSlimAsync(string templateAbsolutePath, AFElementDTO elementDTO)
         {
-            AFElementTemplateDTO elementTemplateDTO = await GetElementTemplateDTOAsync(absolutePath);
-            return await GetElementTemplateSlimAsync(elementTemplateDTO).ConfigureAwait(false);
+            AFElementTemplateDTO elementTemplateDTO = await GetElementTemplateDTOAsync(templateAbsolutePath);
+            return await GetElementTemplateSlimAsync(elementTemplateDTO, elementDTO).ConfigureAwait(false);
         }
 
         private Task<AFElementTemplateDTO> GetElementTemplateDTOAsync(string absolutePath)
@@ -85,6 +86,20 @@ namespace CoresightAutomation.PIWebAPI
             return attributeQueryTaskResults.SelectMany(aq => aq).ToList();
         }
 
+        private async Task<List<AFAttributeDTO>> GetAllAttributeDTOsAsync(AFElementDTO elementDTO)
+        {
+            List<AFAttributeDTO> topLevelAttributes = await GetTopLevelAttributeDTOsAsync(elementDTO).ConfigureAwait(false);
+
+            List<Task<List<AFAttributeDTO>>> attributeQueryTasks = new List<Task<List<AFAttributeDTO>>>();
+            foreach (AFAttributeDTO topLevelAttribute in topLevelAttributes)
+            {
+                Task<List<AFAttributeDTO>> attributeQueryTask = GetAllAttributeDTOsAsync(topLevelAttribute);
+                attributeQueryTasks.Add(attributeQueryTask);
+            }
+            IEnumerable<List<AFAttributeDTO>> attributeQueryTaskResults = await Task.WhenAll<List<AFAttributeDTO>>(attributeQueryTasks).ConfigureAwait(false);
+            return attributeQueryTaskResults.SelectMany(aq => aq).ToList();
+        }
+
         private async Task<List<AFAttributeTemplateDTO>> GetAllAttributeTemplateDTOs(AFAttributeTemplateDTO attributeTemplateDTO)
         {
             List<AFAttributeTemplateDTO> selfAndChildren = new List<AFAttributeTemplateDTO>() { attributeTemplateDTO };
@@ -94,6 +109,21 @@ namespace CoresightAutomation.PIWebAPI
                 foreach (AFAttributeTemplateDTO child in children)
                 {
                     List<AFAttributeTemplateDTO> childAndAllDescendants = await GetAllAttributeTemplateDTOs(child);
+                    selfAndChildren.AddRange(childAndAllDescendants);
+                }
+            }
+            return selfAndChildren;
+        }
+
+        private async Task<List<AFAttributeDTO>> GetAllAttributeDTOsAsync(AFAttributeDTO attributeDTO)
+        {
+            List<AFAttributeDTO> selfAndChildren = new List<AFAttributeDTO>() { attributeDTO };
+            if (attributeDTO.HasChildren)
+            {
+                List<AFAttributeDTO> children = await GetImmediateChildAttributeDTOsAsync(attributeDTO.WebId);
+                foreach (AFAttributeDTO child in children)
+                {
+                    List<AFAttributeDTO> childAndAllDescendants = await GetAllAttributeDTOsAsync(child);
                     selfAndChildren.AddRange(childAndAllDescendants);
                 }
             }
@@ -118,16 +148,36 @@ namespace CoresightAutomation.PIWebAPI
             return topLevelAttributes;
         }
 
+        private async Task<List<AFAttributeDTO>> GetTopLevelAttributeDTOsAsync(AFElementDTO elementDTO)
+        {
+            List<AFAttributeTemplateDTO> allTopLevelAttributes = new List<AFAttributeTemplateDTO>();
+
+            string requestUri = string.Format("elements/{0}/attributes?showExcluded=true", elementDTO.WebId);
+            return await GetObjectAsync<ItemCollectionDTO<AFAttributeDTO>>(requestUri);
+        }
+
         private Task<ItemCollectionDTO<AFAttributeTemplateDTO>> GetImmediateChildAttributeTemplateDTOsAsync(string attributeTemplateWebId)
         {
             string requestUri = string.Format("attributetemplates/{0}/attributetemplates", attributeTemplateWebId);
             return GetObjectAsync<ItemCollectionDTO<AFAttributeTemplateDTO>>(requestUri);
         }
 
+        private Task<ItemCollectionDTO<AFAttributeDTO>> GetImmediateChildAttributeDTOsAsync(string attributeWebId)
+        {
+            string requestUri = string.Format("attributes/{0}/attributes?showExcluded=true", attributeWebId);
+            return GetObjectAsync<ItemCollectionDTO<AFAttributeDTO>>(requestUri);
+        }
+
         private Task<AFAttributeTemplateDTO> GetAttributeTemplateDTOAsync(string webId)
         {
             string requestUriRaw = "attributeTemplates/" + webId;
             return GetObjectAsync<AFAttributeTemplateDTO>(requestUriRaw);
+        }
+
+        private Task<AFAttributeDTO> GetAttributeDTOAsync(string webId)
+        {
+            string requestUriRaw = "attributes/" + webId;
+            return GetObjectAsync<AFAttributeDTO>(requestUriRaw);
         }
 
         private async Task<T> GetObjectAsync<T>(string requestUri)

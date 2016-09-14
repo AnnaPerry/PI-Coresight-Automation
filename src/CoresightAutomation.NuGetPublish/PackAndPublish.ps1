@@ -6,7 +6,7 @@
 ## IMPORTANT: before running this script, update all references to the current version number in this script and in each project.json. The messy reality with current netcore tooling.
 ##
 
-$versionRoot = "1.0.2" # Also specified in every project.json. Update all instances before running this script.
+$versionRoot = "1.0.3" # Also specified in every project.json. Update all instances before running this script.
 $version = If ($versionSuffix -ne "") { "{0}-{1}" -f $versionRoot, $versionSuffix } else { $versionRoot } 
 
 # If solution directory is not specified, default to paths relative to the script's location within the repository
@@ -31,7 +31,7 @@ Join-Path -Path $outputDir -ChildPath "*.nupkg" | Remove-Item
 
 # Package multiple projects
 $xProjectFolders = "CoresightAutomation", "CoresightAutomation.PIWebAPI"
-$projectFolders | ForEach-Object {
+$xProjectFolders | ForEach-Object {
 	$projectFile = Join-Path $solutionDir -ChildPath $_ | Join-Path -ChildPath "project.json"
 	
 	If ($versionSuffixParameter -ne "")
